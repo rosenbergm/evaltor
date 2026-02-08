@@ -1,0 +1,25 @@
+<h2>Administration</h2>
+
+<section>
+    <h4>Assign student to assignment</h4>
+
+    <form method="post" action="/classes/{{ class.id }}/assign">
+        <label for="user_id">Student</label>
+        <select name="user_id" id="user_id" required>
+            <option value="" disabled selected>Select a student</option>
+            {% for user in all_users %}
+            <option value="{{ user.id }}">{{ user.name }} ({{ user.email }})</option>
+            {% endfor %}
+        </select>
+
+        <label for="assignment_id">Assignment</label>
+        <select name="assignment_id" id="assignment_id" required>
+            <option value="" disabled selected>Select an assignment</option>
+            {% for assignment in all_assignments %}
+            <option value="{{ assignment.id }}">{{ assignment.name }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Assign</button>
+    </form>
+</section>

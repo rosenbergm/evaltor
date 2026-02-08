@@ -1,0 +1,27 @@
+[package]
+name = "evaltor"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+description = "A web application for evaluating and sharing code snippets."
+keywords = ["web", "application", "code evaluation", "sharing"]
+readme = "README.md"
+repository = "https://github.com/rosenbergm/evaltor"
+categories = ["web-programming", "code-evaluation"]
+
+[dependencies]
+askama = { version = "0.15" }
+axum = { version = "0.8", features = ["form", "multipart"] }
+axum_typed_multipart = "0.16.5"
+chrono = { version = "0.4", features = ["serde"] }
+clap = { version = "4", features = ["derive", "env"] }
+dotenvy = "0.15.7"
+openidconnect = "4"
+pulldown-cmark = "0.13.0"
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls"] }
+serde = { version = "1.0.228", features = ["derive"] }
+sqlx = { version = "0.8", features = ["runtime-tokio", "sqlite", "uuid", "chrono"] }
+tokio = { version = "1", features = ["full"] }
+tower-sessions = "0.14"
+tower-sessions-sqlx-store = { version = "0.15", features = ["sqlite"] }
+uuid = { version = "1", features = ["v4", "serde"] }

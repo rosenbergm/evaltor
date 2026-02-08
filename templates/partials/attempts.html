@@ -1,0 +1,21 @@
+{% for attempt in attempts %}
+<details {% if loop.first %} open {% endif %}>
+    <summary>
+        Attempt {{ attempts.len() - loop.index0 }}
+        <time datetime="{{ attempt.submitted_at }}">
+            {{ attempt.submitted_at.format("%d. %m. %Y %H:%M") }}
+        </time>
+    </summary>
+    <div
+        class="runners-container"
+        hx-get="/attempts/{{ attempt.id }}/runners"
+        hx-trigger="load"
+        hx-swap="innerHTML"
+        style="padding-left: 1rem"
+    >
+        Loading results...
+    </div>
+</details>
+{% else %}
+<h3>No attempts yet</h3>
+{% endfor %}

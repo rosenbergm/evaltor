@@ -1,0 +1,49 @@
+<div class="apart-row">
+    <p>Total points: {{ total_runner_points }} / {{ total_test_points }}</p>
+
+    <button
+        hx-get="/attempts/{{ attempt_id }}/runners"
+        hx-target="closest .runners-container"
+        hx-swap="innerHTML"
+        class="icon-btn"
+    >
+        <i data-lucide="rotate-cw"></i>
+    </button>
+</div>
+
+{% for runner in runners %}
+<section>
+    <h4>
+        {{ runner.test_name }} ({{ runner.runner_points }} / {{
+        runner.test_points }}) {% if let Some(_finished_at) = runner.finished_at
+        %} {% if runner.passed %}
+        <i data-lucide="check"></i>
+        {% else %} {% if runner.runner_points == 0 %}
+        <i data-lucide="heart-crack"></i>
+        {% else %}
+        <i data-lucide="chart-column-increasing"></i>
+        {% endif %} {% endif %} {% else %} Running... {% endif %}
+    </h4>
+
+    <details>
+        <summary>Show output</summary>
+        <div style="display: flex; flex-direction: row; gap: 0.4rem">
+            {% if let Some(output) = runner.stdout %}
+            <div style="flex: 1">
+                <p>Actual output:</p>
+                <pre>{{ output }}</pre>
+            </div>
+            {% endif %}
+            <br />
+            {% if let Some(output) = runner.expected_stdout %}
+            <div style="flex: 1">
+                <p>Expected output:</p>
+                <pre>{{ output }}</pre>
+            </div>
+            {% endif %}
+        </div>
+    </details>
+</section>
+{% else %}
+<span>No results yet</span>
+{% endfor %}

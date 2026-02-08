@@ -1,0 +1,77 @@
+<!doctype html>
+<html>
+    <head>
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.lime.min.css"
+        />
+        <script
+            src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js"
+            integrity="sha384-/TgkGk7p307TH7EXJDuUlgG3Ce1UVolAOFopFekQkkXihi5u/6OCvVKyz1W+idaz"
+            crossorigin="anonymous"
+        ></script>
+        <script src="https://unpkg.com/lucide@latest"></script>
+
+        <style>
+            :root {
+                --pico-form-element-spacing-vertical: 0.5rem;
+                --pico-form-element-spacing-horizontal: 0.75rem;
+            }
+
+            time {
+                font-size: 0.8em;
+            }
+
+            pre {
+                padding: 0.5em;
+                border-radius: 4px;
+                overflow-x: auto;
+            }
+
+            svg.lucide {
+                width: 18px;
+                height: 18px;
+            }
+
+            .icon-btn {
+                all: unset;
+                cursor: pointer;
+
+                transition: transform 0.1s ease-in-out;
+
+                /*width: 16px;
+                height: 16px;*/
+
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .icon-btn:hover {
+                opacity: 0.8;
+            }
+
+            .icon-btn:active {
+                transform: scale(0.9);
+            }
+
+            .apart-row {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+        </style>
+    </head>
+    <body>
+        <header>{% block nav %}{% endblock %}</header>
+        <main>{% block content %}{% endblock %}</main>
+
+        <script>
+            lucide.createIcons();
+            document.body.addEventListener("htmx:afterSwap", (event) => {
+                lucide.createIcons({ node: event.detail.target });
+            });
+        </script>
+    </body>
+</html>

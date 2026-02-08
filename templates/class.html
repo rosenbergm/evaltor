@@ -1,0 +1,29 @@
+{% extends "base.html" %} {% block nav %}
+<nav>
+    <span>{{ user_name }} ({{ user_email }})</span>
+    <a href="/auth/logout">Logout</a>
+</nav>
+{% endblock %} {% block content %}
+<h1>{{ class.name }}</h1>
+<p>{{ class.description | markdown | safe }}</p>
+
+<p>Total points: {{ points.achieved() }} / {{ points.maximum() }}</p>
+
+<h2>Assignments</h2>
+{% for assignment in assignments %}
+<div class="assignment">
+    <h3>
+        <a href="/classes/{{ class.id }}/{{ assignment.id }}"
+            >{{ assignment.name }}</a
+        >
+    </h3>
+    <p>{{ assignment.description | markdown | safe }}</p>
+</div>
+{% else %}
+<p>No assignments yet</p>
+{% endfor %}
+
+<hr />
+
+{% if user_id == class.creator_id %} {% include "class_admin.html" %} {% endif
+%} {% endblock %}

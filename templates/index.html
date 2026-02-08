@@ -1,0 +1,14 @@
+{% extends "base.html" %} {% block nav %}
+<nav>
+    <span>{{ user_name }} ({{ user_email }})</span>
+    <a href="/auth/logout">Logout</a>
+</nav>
+{% endblock %} {% block content %}
+<h1>My classes</h1>
+{% for class in classes %}
+<div class="class">
+    <h2>
+        <a href="/classes/{{ class.id }}">{{ class.name }}</a>
+    </h2>
+</div>
+{% endfor %} {% endblock %}

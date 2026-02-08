@@ -1,0 +1,39 @@
+{% extends "base.html" %} {% block nav %}
+<nav>
+    <span>{{ user_name }} ({{ user_email }})</span>
+    <a href="/auth/logout">Logout</a>
+</nav>
+{% endblock %} {% block content %}
+<h1>{{ assignment.name }}</h1>
+<p>{{ assignment.description | markdown | safe }}</p>
+
+<article>
+    <form
+        hx-post="/assignments/{{ assignment.id }}/attempts"
+        hx-encoding="multipart/form-data"
+        hx-target="div[ hx-get='/assignments/{{ assignment.id }}/attempts' ]"
+        hx-swap="innerHTML"
+    >
+        <input type="hidden" name="assignment_id" value="{{ assignment.id }}" />
+
+        <fieldset role="grid" style="margin-bottom: 0">
+            <label
+                >Upload your code
+                <input type="file" name="program" required />
+            </label>
+
+            <input type="submit" value="Submit" style="margin-bottom: 0" />
+        </fieldset>
+    </form>
+</article>
+
+<hr />
+
+<div
+    hx-get="/assignments/{{ assignment.id }}/attempts"
+    hx-trigger="load"
+    hx-swap="innerHTML"
+>
+    <span class="loading">Loading attempts...</span>
+</div>
+{% endblock %}
