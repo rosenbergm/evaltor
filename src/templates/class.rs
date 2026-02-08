@@ -13,7 +13,7 @@ pub struct ClassPage {
     pub user_email: String,
     pub user_id: Uuid,
     pub class: Class,
-    pub assignments: Vec<Assignment>,
+    pub assignments: Vec<(Assignment, Points)>,
     pub points: Points,
     pub all_users: Vec<User>,
     pub all_assignments: Vec<Assignment>,

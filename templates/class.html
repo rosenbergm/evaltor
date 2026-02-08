@@ -10,13 +10,18 @@
 <p>Total points: {{ points.achieved() }} / {{ points.maximum() }}</p>
 
 <h2>Assignments</h2>
-{% for assignment in assignments %}
+{% for (assignment, points) in assignments %}
 <div class="assignment">
-    <h3>
-        <a href="/classes/{{ class.id }}/{{ assignment.id }}"
-            >{{ assignment.name }}</a
-        >
-    </h3>
+    <div class="apart-row">
+        <h3 style="margin-bottom: 0">
+            <a href="/classes/{{ class.id }}/{{ assignment.id }}"
+                >{{ assignment.name }}
+            </a>
+        </h3>
+        <p style="margin-bottom: 0">
+            ({{ points.achieved() }} / {{ points.maximum() }})
+        </p>
+    </div>
     <p>{{ assignment.description | markdown | safe }}</p>
 </div>
 {% else %}

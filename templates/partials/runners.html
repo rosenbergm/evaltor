@@ -14,9 +14,11 @@
 {% for runner in runners %}
 <section>
     <h4>
-        {{ runner.test_name }} ({{ runner.runner_points }} / {{
-        runner.test_points }}) {% if let Some(_finished_at) = runner.finished_at
-        %} {% if runner.passed %}
+        <span data-tooltip="{{ runner.test_description }}"
+            >{{ runner.test_name }}</span
+        >
+        ({{ runner.runner_points }} / {{ runner.test_points }}) {% if let
+        Some(_finished_at) = runner.finished_at %} {% if runner.passed %}
         <i data-lucide="check"></i>
         {% else %} {% if runner.runner_points == 0 %}
         <i data-lucide="heart-crack"></i>
@@ -26,7 +28,8 @@
     </h4>
 
     <details>
-        <summary>Show output</summary>
+        <summary>Show details</summary>
+
         <div style="display: flex; flex-direction: row; gap: 0.4rem">
             {% if let Some(output) = runner.stdout %}
             <div style="flex: 1">

@@ -94,9 +94,10 @@ async fn get_class(
     .await
     .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
-    let assignments = UserAssignment::assignments_for_user(&state.db_pool, auth.0.id, class_id)
-        .await
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    let assignments =
+        UserAssignment::assignments_for_user_with_points(&state.db_pool, auth.0.id, class_id)
+            .await
+            .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
     let points = Class::points_for_student(&state.db_pool, class_id, auth.0.id)
         .await

@@ -29,6 +29,7 @@ async fn get_runners(
     let runners = sqlx::query!(
         r#"SELECT
             t.name as "test_name!",
+            t.description as "test_description!",
             t.points as "test_points!",
             r.passed as "passed: bool",
             r.finished_at as "finished_at: chrono::NaiveDateTime",
@@ -57,6 +58,7 @@ async fn get_runners(
                 .expected_stdout
                 .and_then(|out| String::from_utf8(out).ok()),
             test_name: record.test_name,
+            test_description: record.test_description,
 
             test_points: record.test_points,
             runner_points: record.runner_points,

@@ -6,9 +6,13 @@
 {% endblock %} {% block content %}
 <h1>My classes</h1>
 {% for class in classes %}
-<div class="class">
-    <h2>
-        <a href="/classes/{{ class.id }}">{{ class.name }}</a>
-    </h2>
-</div>
+<article class="class">
+    <header>
+        <h2>
+            <a href="/classes/{{ class.id }}">{{ class.name }}</a>
+        </h2>
+    </header>
+
+    <p>{{ class.description }}</p>
+</article>
 {% endfor %} {% endblock %}

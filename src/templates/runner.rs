@@ -4,6 +4,7 @@ use uuid::Uuid;
 
 pub struct RunnerResult {
     pub test_name: String,
+    pub test_description: String,
     pub finished_at: Option<NaiveDateTime>,
     pub passed: bool,
     pub stdout: Option<String>,
