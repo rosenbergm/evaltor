@@ -66,6 +66,11 @@ pub async fn server(args: EvaltorArgs) -> Result<Router, io::Error> {
         .await
         .map_err(io::Error::other)?;
 
+    sqlx::migrate!("./migrations")
+        .run(&db_pool)
+        .await
+        .map_err(io::Error::other)?;
+
     // make_test_data(&db_pool, &args).await;
 
     let oidc_client = auth::build_oidc_client(
