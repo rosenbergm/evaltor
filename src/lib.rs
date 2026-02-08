@@ -26,13 +26,12 @@ use std::io;
 use askama::Template;
 use axum::{
     Router,
-    extract::{Path, State},
+    extract::State,
     http::StatusCode,
     response::{Html, IntoResponse},
     routing::get,
 };
 
-use chrono::NaiveDateTime;
 use sqlx::SqlitePool;
 use tokio::fs;
 use tower_sessions::{Expiry, SessionManagerLayer, cookie::time::Duration};
@@ -40,7 +39,7 @@ use tower_sessions_sqlx_store::SqliteStore;
 use uuid::Uuid;
 
 use crate::{
-    models::{Assignment, Attempt, Class, Test, TestType},
+    models::{Assignment, Class, Test, TestType},
     runner_manager::RunnerManager,
     state::EvaltorState,
 };
@@ -57,6 +56,7 @@ mod points;
 mod routes;
 mod runner_manager;
 mod state;
+mod templates;
 
 pub async fn server(args: EvaltorArgs) -> Result<Router, io::Error> {
     let db_pool = SqlitePool::connect("sqlite:data.db")
@@ -94,30 +94,14 @@ pub async fn server(args: EvaltorArgs) -> Result<Router, io::Error> {
 
     let router = Router::new()
         .route("/", get(index))
-        .route("/attempts/{id}/runners", get(get_runners))
         .merge(routes::class::router())
         .merge(routes::assignment::router())
+        .merge(routes::attempt::router())
         .merge(auth::auth_router())
         .layer(session_layer)
         .with_state(state);
 
     Ok(router)
-}
-
-#[derive(Template)]
-#[template(path = "assignment.html")]
-struct ClassAssignmentPage {
-    user_name: String,
-    user_email: String,
-    assignment: Assignment,
-}
-
-#[derive(Template)]
-#[template(path = "assignment.html")]
-struct AssignmentPage {
-    user_name: String,
-    user_email: String,
-    assignment: Assignment,
 }
 
 #[derive(Debug, Template)]
@@ -126,14 +110,6 @@ struct IndexPage {
     user_name: String,
     user_email: String,
     classes: Vec<Class>,
-}
-
-#[derive(Template)]
-#[template(path = "partials/attempts.html")]
-#[expect(dead_code)]
-struct AttemptsPartial {
-    assignment_id: Uuid,
-    attempts: Vec<Attempt>,
 }
 
 async fn index(auth: auth::AuthUser, State(state): State<EvaltorState>) -> impl IntoResponse {
@@ -152,85 +128,6 @@ async fn index(auth: auth::AuthUser, State(state): State<EvaltorState>) -> impl 
         user_name: auth.name.clone(),
         user_email: auth.email.clone(),
         classes,
-    }
-    .render()
-    .map(Html)
-    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
-}
-
-struct RunnerResult {
-    test_name: String,
-    finished_at: Option<NaiveDateTime>,
-    passed: bool,
-    stdout: Option<String>,
-    expected_stdout: Option<String>,
-
-    test_points: i64,
-    runner_points: i64,
-}
-
-#[derive(Template)]
-#[template(path = "partials/runners.html")]
-struct RunnersPartial {
-    attempt_id: Uuid,
-    runners: Vec<RunnerResult>,
-
-    total_test_points: i64,
-    total_runner_points: i64,
-}
-
-async fn get_runners(
-    _auth: auth::AuthUser,
-    State(state): State<EvaltorState>,
-    Path(attempt_id): Path<Uuid>,
-) -> Result<Html<String>, StatusCode> {
-    let mut total_test_points = 0;
-    let mut total_runner_points = 0;
-
-    let runners = sqlx::query!(
-        r#"SELECT
-            t.name as "test_name!",
-            t.points as "test_points!",
-            r.passed as "passed: bool",
-            r.finished_at as "finished_at: chrono::NaiveDateTime",
-            r.stdout as "stdout: Vec<u8>",
-            r.expected_stdout as "expected_stdout: Vec<u8>",
-            r.points as "runner_points!"
-        FROM runners r
-        JOIN tests t ON r.test_id = t.id
-        WHERE r.attempt_id = ?
-        ORDER BY t.name"#,
-        attempt_id
-    )
-    .fetch_all(&state.db_pool)
-    .await
-    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?
-    .into_iter()
-    .map(|record| {
-        total_test_points += record.test_points;
-        total_runner_points += record.runner_points;
-
-        RunnerResult {
-            finished_at: record.finished_at,
-            passed: record.passed,
-            stdout: record.stdout.and_then(|out| String::from_utf8(out).ok()),
-            expected_stdout: record
-                .expected_stdout
-                .and_then(|out| String::from_utf8(out).ok()),
-            test_name: record.test_name,
-
-            test_points: record.test_points,
-            runner_points: record.runner_points,
-        }
-    })
-    .collect();
-
-    RunnersPartial {
-        attempt_id,
-        runners,
-
-        total_test_points,
-        total_runner_points,
     }
     .render()
     .map(Html)

@@ -10,9 +10,10 @@ use serde::Deserialize;
 use uuid::Uuid;
 
 use crate::{
-    AssignmentPage, Points, auth, filters,
+    auth,
     models::{Assignment, Class, User, UserAssignment},
     state::EvaltorState,
+    templates::{AssignmentPage, ClassPage},
 };
 
 pub fn router() -> axum::Router<EvaltorState> {
@@ -77,19 +78,6 @@ async fn class_assignment(
     .render()
     .map(Html)
     .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
-}
-
-#[derive(Template)]
-#[template(path = "class.html")]
-struct ClassPage {
-    user_name: String,
-    user_email: String,
-    user_id: Uuid,
-    class: Class,
-    assignments: Vec<Assignment>,
-    points: Points,
-    all_users: Vec<User>,
-    all_assignments: Vec<Assignment>,
 }
 
 async fn get_class(

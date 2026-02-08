@@ -12,10 +12,11 @@ use tokio::fs;
 use uuid::Uuid;
 
 use crate::{
-    AssignmentPage, AttemptsPartial, auth,
+    auth,
     models::{Assignment, Attempt, Test, TestType},
     nsjail::NSJailBlueprint,
     state::EvaltorState,
+    templates::{AssignmentPage, AttemptsPartial},
 };
 
 pub fn router() -> axum::Router<EvaltorState> {
@@ -79,9 +80,9 @@ async fn get_attempts(
 
 #[derive(Debug, TryFromMultipart)]
 pub struct PostAssignmentForm {
-    assignment_id: Uuid,
+    pub assignment_id: Uuid,
     #[form_data(limit = "10MiB")]
-    program: FieldData<Bytes>,
+    pub program: FieldData<Bytes>,
 }
 
 async fn post_attempt(
