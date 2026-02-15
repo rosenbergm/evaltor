@@ -21,7 +21,7 @@ use tokio::net::TcpListener;
 
 #[tokio::main]
 async fn main() -> Result<(), io::Error> {
-    dotenvy::dotenv().map_err(io::Error::other)?;
+    _ = dotenvy::dotenv();
 
     let args = EvaltorArgs::parse();
 
