@@ -1,0 +1,86 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+  DATABASE_URL: sqlite:data.db
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install stable toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache dependencies
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install sqlx-cli
+        uses: taiki-e/install-action@v2
+        with:
+          tool: sqlx-cli
+
+      - name: Setup database
+        run: |
+          sqlx database create
+          sqlx migrate run
+
+      - name: Check
+        run: cargo check
+
+      - name: Run tests
+        run: cargo test
+
+  build:
+    runs-on: ubuntu-latest
+    needs: check
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install stable toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache dependencies
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install sqlx-cli
+        uses: taiki-e/install-action@v2
+        with:
+          tool: sqlx-cli
+
+      - name: Setup database
+        run: |
+          sqlx database create
+          sqlx migrate run
+
+      - name: Build release binary
+        run: cargo build --release
+
+      - name: Compute SHA256 hash
+        run: |
+          cd target/release
+          sha256sum evaltor > evaltor.sha256
+          {
+            echo "### Binary SHA256"
+            echo '```'
+            cat evaltor.sha256
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: evaltor-linux-x86_64
+          path: |
+            target/release/evaltor
+            target/release/evaltor.sha256
