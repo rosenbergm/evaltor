@@ -5,6 +5,9 @@
         <time datetime="{{ attempt.submitted_at }}">
             {{ attempt.submitted_at.format("%d. %m. %Y %H:%M") }}
         </time>
+        <a href="/attempts/{{ attempt.id }}/source" target="_blank">
+            <i data-lucide="file-digit"></i>
+        </a>
     </summary>
     <div
         class="runners-container"
